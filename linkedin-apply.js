@@ -13,17 +13,41 @@ const path = require('path');
 
 // ─── PROFILE ──────────────────────────────────────────────────────────────────
 const PROFILE = {
-  phone: '+65 90616870',
-  email: 'adithyo.wijaya@gmail.com',
-  linkedin: 'https://sg.linkedin.com/in/adithyodewangga',
-  city: 'Singapore',
-  country: 'Singapore',
-  firstName: 'Adithyo',
-  lastName: 'Wijaya',
+  // Identity
+  firstName:  'Adithyo',
+  lastName:   'Wijaya',
+  fullName:   'Adithyo Dewangga Wijaya',
+  email:      'adithyo.wijaya@gmail.com',
+  phone:      '+65 90616870',
+  linkedin:   'https://sg.linkedin.com/in/adithyodewangga',
+  // Location
+  city:       'Singapore',
+  state:      'Singapore',
+  country:    'Singapore',
+  postalCode: '018956',
+  // Work
+  currentTitle:      'Senior Solutions Manager',
+  currentCompany:    'Singtel',
   yearsOfExperience: '10',
-  noticePeriod: '1 month',
-  currentSalary: '',
-  expectedSalary: '',
+  noticePeriod:      '60 days',
+  currentSalary:     '200000',
+  expectedSalary:    '300000',
+  salaryCurrency:    'SGD',
+  salaryType:        'Annual',
+  // Work authorization
+  workAuthorization: 'Singapore Citizen',
+  requireSponsorship: 'No',
+  // Education
+  highestDegree: "Bachelor's Degree",
+  university:    'Binus University',
+  major:         'Computer Science',
+  graduationYear:'2013',
+  // EEO / Diversity (optional fields — filled when asked)
+  gender:     'Man',
+  ethnicity:  'Asian',
+  disability: 'No',
+  veteran:    'No',
+  // Resume
   resumePath: 'D:/Gdrive/CV/Wijaya 2026 NEW.pdf',
   coverLetter: `I am writing to express my strong interest in this role. With over 10 years of experience in network solution architecture, technical pre-sales, and cross-functional program management, I am confident I can deliver meaningful impact.
 
@@ -311,11 +335,12 @@ async function clickAndApply(page, easyApplyBtn, canonicalUrl, applied) {
       ].join(', ')).first();
 
       if (await nextBtn.isVisible().catch(() => false)) {
-        // Fix any validation errors first
+        // Always run fill + fallback before advancing — ensures no required field is blank
         await fixErrors(modal);
+        await sleep(400);
         log(`  Step ${step + 1}: clicking Next/Review...`);
         await nextBtn.click();
-        await sleep(1000);
+        await sleep(1200);
         continue;
       }
 
@@ -349,35 +374,76 @@ async function fillFormFields(modal) {
 // ── Text inputs ───────────────────────────────────────────────────────────────
 async function fillTextInputs(modal) {
   const textMap = [
-    // Identity
-    { patterns: ['first name', 'firstname', 'given name'],                         value: PROFILE.firstName },
-    { patterns: ['last name', 'lastname', 'surname', 'family name'],               value: PROFILE.lastName },
-    { patterns: ['full name', 'your name', 'name'],                                value: `${PROFILE.firstName} ${PROFILE.lastName}` },
-    { patterns: ['email', 'e-mail'],                                               value: PROFILE.email },
-    { patterns: ['phone', 'mobile', 'contact number', 'telephone', 'cell'],        value: PROFILE.phone },
-    // Location
-    { patterns: ['city', 'town', 'municipality'],                                  value: 'Singapore' },
-    { patterns: ['state', 'province', 'region'],                                   value: 'Singapore' },
-    { patterns: ['country'],                                                        value: 'Singapore' },
-    { patterns: ['zip', 'postal code', 'postcode', 'pin code'],                    value: '018956' },
-    { patterns: ['street', 'address line 1', 'address'],                           value: 'Singapore' },
-    // Professional
-    { patterns: ['linkedin', 'linkedin url', 'linkedin profile'],                  value: PROFILE.linkedin },
-    { patterns: ['website', 'portfolio', 'personal url', 'personal website'],      value: '' },
-    { patterns: ['current employer', 'employer', 'company', 'current company'],    value: 'Singtel' },
-    { patterns: ['current title', 'job title', 'current position', 'current role'], value: 'Senior Solutions Manager' },
+    // ── Identity
+    { patterns: ['first name', 'firstname', 'given name', 'forename'],
+      value: PROFILE.firstName },
+    { patterns: ['last name', 'lastname', 'surname', 'family name'],
+      value: PROFILE.lastName },
+    { patterns: ['full name', 'your name', 'legal name', 'applicant name'],
+      value: PROFILE.fullName },
+    { patterns: ['email', 'e-mail', 'email address'],
+      value: PROFILE.email },
+    { patterns: ['phone', 'mobile', 'contact number', 'telephone', 'cell', 'phone number'],
+      value: PROFILE.phone },
+    // ── Location
+    { patterns: ['city', 'town', 'municipality', 'current city'],
+      value: PROFILE.city },
+    { patterns: ['state', 'province', 'region'],
+      value: PROFILE.state },
+    { patterns: ['country', 'country of residence'],
+      value: PROFILE.country },
+    { patterns: ['zip', 'postal code', 'postcode', 'pin code', 'postal'],
+      value: PROFILE.postalCode },
+    { patterns: ['street', 'address line', 'address'],
+      value: PROFILE.city },
+    // ── Professional
+    { patterns: ['linkedin', 'linkedin url', 'linkedin profile', 'linkedin page'],
+      value: PROFILE.linkedin },
+    { patterns: ['website', 'portfolio', 'personal url', 'personal website', 'personal site'],
+      value: PROFILE.linkedin },
+    { patterns: ['current employer', 'employer', 'current company', 'company name', 'organization'],
+      value: PROFILE.currentCompany },
+    { patterns: ['current title', 'job title', 'current position', 'current role', 'position title'],
+      value: PROFILE.currentTitle },
+    { patterns: ['university', 'school', 'institution', 'college', 'alma mater'],
+      value: PROFILE.university },
+    { patterns: ['major', 'field of study', 'course', 'degree subject'],
+      value: PROFILE.major },
+    { patterns: ['graduation year', 'year of graduation', 'grad year'],
+      value: PROFILE.graduationYear },
+    // ── Experience (handles tool-specific questions too — default to 10)
     { patterns: ['years of experience', 'years experience', 'total experience',
-                 'how many years', 'experience (years)', 'relevant experience'],   value: '10' },
-    { patterns: ['current salary', 'current ctc', 'present salary',
-                 'current compensation'],                                           value: PROFILE.currentSalary },
-    { patterns: ['expected salary', 'desired salary', 'expected ctc',
-                 'salary expectation', 'expected compensation'],                   value: PROFILE.expectedSalary },
-    { patterns: ['notice period', 'how soon can you join', 'availability',
-                 'joining notice', 'notice'],                                       value: '1 month' },
+                 'how many years', 'experience (years)', 'relevant experience',
+                 'years in', 'experience with', 'years using', 'years working'],
+      value: PROFILE.yearsOfExperience },
+    // ── Salary
+    { patterns: ['current salary', 'current ctc', 'present salary', 'current compensation',
+                 'current annual salary', 'current package'],
+      value: PROFILE.currentSalary },
+    { patterns: ['expected salary', 'desired salary', 'expected ctc', 'salary expectation',
+                 'expected compensation', 'expected package', 'target salary'],
+      value: PROFILE.expectedSalary },
+    // ── Availability
+    { patterns: ['notice period', 'how soon can you join', 'availability', 'joining notice',
+                 'available to start', 'start date', 'earliest start'],
+      value: PROFILE.noticePeriod },
+    // ── Work authorization
+    { patterns: ['work authorization', 'work permit', 'visa status', 'citizenship status',
+                 'right to work', 'immigration status'],
+      value: PROFILE.workAuthorization },
+    // ── EEO / Diversity
+    { patterns: ['gender', 'gender identity', 'sex'],
+      value: PROFILE.gender },
+    { patterns: ['ethnicity', 'race', 'racial', 'ethnic background', 'ethnic origin'],
+      value: PROFILE.ethnicity },
+    { patterns: ['disability', 'disabled', 'disability status'],
+      value: PROFILE.disability },
+    { patterns: ['veteran', 'military', 'armed forces', 'military status'],
+      value: PROFILE.veteran },
   ];
 
   for (const { patterns, value } of textMap) {
-    if (value === undefined || value === null) continue;
+    if (!value) continue;
     for (const p of patterns) {
       const input = modal.locator([
         `input[aria-label*="${p}" i]`,
@@ -422,30 +488,44 @@ async function fillSelectDropdowns(modal) {
     const options = await sel.locator('option').allInnerTexts().catch(() => []);
     let idx = 1; // default: first non-blank option
 
-    if (/education|degree|qualification|highest.*level/i.test(label)) {
+    if (/education|degree|qualification|highest.*level|academic/i.test(label)) {
       idx = pickOption(options, ["bachelor's", 'bachelor', 'undergraduate', 'degree']) ?? 1;
     } else if (/country/i.test(label)) {
       idx = pickOption(options, ['singapore']) ?? 1;
     } else if (/language|english/i.test(label)) {
-      idx = pickOption(options, ['english', 'native', 'fluent', 'professional', 'full professional']) ?? 1;
-    } else if (/employment type|job type|work type/i.test(label)) {
+      idx = pickOption(options, ['english', 'native', 'fluent', 'full professional', 'professional']) ?? 1;
+    } else if (/employment type|job type|work type|contract type/i.test(label)) {
       idx = pickOption(options, ['full-time', 'full time', 'permanent']) ?? 1;
-    } else if (/experience level|seniority|level/i.test(label)) {
-      idx = pickOption(options, ['senior', 'lead', 'mid-senior', 'manager', 'director']) ?? 1;
-    } else if (/work arrangement|remote|on.?site|hybrid/i.test(label)) {
+    } else if (/experience level|seniority|level|career level/i.test(label)) {
+      idx = pickOption(options, ['senior', 'mid-senior', 'lead', 'manager', 'director']) ?? 1;
+    } else if (/work arrangement|remote|on.?site|hybrid|work mode/i.test(label)) {
       idx = pickOption(options, ['hybrid', 'on-site', 'onsite', 'office']) ?? 1;
-    } else if (/gender/i.test(label)) {
-      idx = pickOption(options, ['male', 'man']) ?? 1;
-    } else if (/notice|availability/i.test(label)) {
-      idx = pickOption(options, ['1 month', 'one month', '30 days', '4 weeks']) ?? 1;
-    } else if (/sponsorship|visa/i.test(label)) {
-      idx = pickOption(options, ['no', 'not required', 'do not require', 'i do not']) ?? 1;
-    } else if (/authorized|eligible|right to work|work permit/i.test(label)) {
-      idx = pickOption(options, ['yes', 'i am authorized', 'eligible', 'citizen', 'permanent resident']) ?? 1;
+    } else if (/gender|gender identity|sex/i.test(label)) {
+      idx = pickOption(options, ['man', 'male']) ?? 1;
+    } else if (/ethnicity|race|racial|ethnic/i.test(label)) {
+      idx = pickOption(options, ['asian', 'south east asian', 'prefer not', 'decline']) ?? 1;
+    } else if (/disability|disabled/i.test(label)) {
+      idx = pickOption(options, ['no', 'i do not have', 'prefer not to disclose', 'decline']) ?? 1;
+    } else if (/veteran|military|armed forces/i.test(label)) {
+      idx = pickOption(options, ['no', 'not a veteran', 'i am not', 'prefer not']) ?? 1;
+    } else if (/notice|availability|how soon|when can you start/i.test(label)) {
+      idx = pickOption(options, ['60', '2 month', 'two month', '60 days', '1-3 month', '1 month', 'one month', '30 days']) ?? 1;
+    } else if (/sponsorship|visa requirement|visa needed/i.test(label)) {
+      idx = pickOption(options, ['no', 'not required', 'do not require', 'i do not need']) ?? 1;
+    } else if (/authorized|eligible|right to work|work authorization|work permit status/i.test(label)) {
+      idx = pickOption(options, ['yes', 'citizen', 'permanent resident', 'i am authorized', 'eligible']) ?? 1;
+    } else if (/citizenship|citizen status|nationality/i.test(label)) {
+      idx = pickOption(options, ['singapore', 'citizen', 'singapore citizen']) ?? 1;
     } else if (/currency/i.test(label)) {
-      idx = pickOption(options, ['sgd', 'singapore dollar', 'usd']) ?? 1;
-    } else if (/industry/i.test(label)) {
-      idx = pickOption(options, ['telecom', 'technology', 'information technology', 'networking']) ?? 1;
+      idx = pickOption(options, ['sgd', 'singapore dollar']) ?? 1;
+    } else if (/salary type|pay type|compensation type/i.test(label)) {
+      idx = pickOption(options, ['annual', 'yearly', 'per year']) ?? 1;
+    } else if (/industry|sector/i.test(label)) {
+      idx = pickOption(options, ['telecom', 'technology', 'information technology', 'networking', 'it services']) ?? 1;
+    } else if (/relocat/i.test(label)) {
+      idx = pickOption(options, ['no', 'not willing', 'already located']) ?? 1;
+    } else if (/pronouns/i.test(label)) {
+      idx = pickOption(options, ['he/him', 'prefer not', 'decline']) ?? 1;
     }
 
     await sel.selectOption({ index: idx }).catch(() => {});
@@ -505,8 +585,8 @@ async function fillRadioButtons(modal) {
     const labels  = await fieldset.locator('label').allInnerTexts().catch(() => []);
     if (radios.length === 0) continue;
 
-    const answerYes = /authorized|eligible|right to work|currently employed|currently working|work in singapore|speak english|proficient|citizen|permanent resident|willing to travel/i.test(question);
-    const answerNo  = /require sponsorship|need sponsorship|visa sponsorship|require.*work permit|need.*work permit/i.test(question);
+    const answerYes = /authorized|eligible|right to work|currently employed|currently working|work in singapore|speak english|proficient in english|fluent|english speaker|citizen|permanent resident|willing to travel|hybrid|available|have experience|familiar with|proficient|skilled|worked with|used before|can you|able to/i.test(question);
+    const answerNo  = /require sponsorship|need sponsorship|visa sponsorship|require.*work permit|need.*work permit|require.*visa|need.*visa|criminal|convicted|felony|disability|disabled|veteran|military service/i.test(question);
 
     let targetIdx = 0;
     if (answerYes) {
@@ -515,6 +595,11 @@ async function fillRadioButtons(modal) {
     } else if (answerNo) {
       const ni = labels.findIndex(l => /^no$/i.test(l.trim()));
       targetIdx = ni >= 0 ? ni : radios.length - 1;
+    }
+    // Disability / veteran — prefer "Prefer not to disclose" if available
+    if (/disability|disabled|veteran|military/i.test(question)) {
+      const preferIdx = labels.findIndex(l => /prefer not|decline|disclose/i.test(l));
+      if (preferIdx >= 0) targetIdx = preferIdx;
     }
 
     await radios[targetIdx]?.check().catch(() => {});
@@ -539,8 +624,14 @@ async function fillCustomRadioButtons(modal) {
     const radioTexts = [];
     for (const r of radios) radioTexts.push(await r.innerText().catch(() => ''));
 
-    const answerNo = /require sponsorship|need sponsorship|visa sponsorship|require.*work permit/i.test(question);
-    const answerYes = /authorized|eligible|right to work|currently employed|citizen|permanent resident|english|willing to travel/i.test(question);
+    const answerNo  = /require sponsorship|need sponsorship|visa sponsorship|require.*work permit|need.*visa|criminal|convicted|felony|disability|disabled|veteran|military/i.test(question);
+    const answerYes = /authorized|eligible|right to work|currently employed|citizen|permanent resident|english|willing to travel|proficient|familiar|experience with|have.*skill|can you|able to|hybrid|available/i.test(question);
+
+    // Disability / veteran — prefer "Prefer not to disclose" if available
+    if (/disability|disabled|veteran|military/i.test(question)) {
+      const preferIdx = radioTexts.findIndex(t => /prefer not|decline|disclose/i.test(t));
+      if (preferIdx >= 0) { await radios[preferIdx].click().catch(() => {}); continue; }
+    }
 
     if (answerNo) {
       const ni = radioTexts.findIndex(t => /^no$/i.test(t.trim()));
@@ -554,27 +645,90 @@ async function fillCustomRadioButtons(modal) {
   }
 }
 
-// ── Fix validation errors before proceeding ───────────────────────────────────
+// ── Aggressive fallback error fixer ──────────────────────────────────────────
+// Rule: submission first. If we can't answer precisely, fill with safe defaults
+// so the Required validation passes and the CV enters the recruiter's system.
 async function fixErrors(modal) {
-  const errors = modal.locator('.artdeco-inline-feedback--error:visible');
-  const cnt = await errors.count().catch(() => 0);
-  if (cnt === 0) return;
-
-  log(`  Fixing ${cnt} validation error(s)...`);
-
-  // Re-run full fill in case something was missed
+  // Always re-run full fill regardless of whether errors are visible
   await fillTextInputs(modal);
   await fillSelectDropdowns(modal);
   await fillRadioButtons(modal);
   await fillCustomRadioButtons(modal);
+  await fillTextareas(modal);
 
-  // Any still-empty number/text inputs → fill with 0
-  const inputs = modal.locator('input[type="text"]:visible, input[type="number"]:visible');
-  const iCnt = await inputs.count().catch(() => 0);
-  for (let i = 0; i < iCnt; i++) {
-    const inp = inputs.nth(i);
+  const errors = modal.locator('.artdeco-inline-feedback--error:visible');
+  const cnt = await errors.count().catch(() => 0);
+  if (cnt > 0) {
+    log(`  ${cnt} validation error(s) detected — applying fallback rules...`);
+    await applyFallbackRules(modal);
+  }
+}
+
+async function applyFallbackRules(modal) {
+  // Fallback 1: empty text inputs → 'NA'
+  const textInputs = modal.locator('input[type="text"]:visible');
+  const tCnt = await textInputs.count().catch(() => 0);
+  for (let i = 0; i < tCnt; i++) {
+    const inp = textInputs.nth(i);
+    const val = await inp.inputValue().catch(() => '');
+    if (!val) {
+      await inp.click().catch(() => {});
+      await inp.fill('NA').catch(() => {});
+    }
+  }
+
+  // Fallback 2: empty number inputs → '0'
+  const numInputs = modal.locator('input[type="number"]:visible');
+  const nCnt = await numInputs.count().catch(() => 0);
+  for (let i = 0; i < nCnt; i++) {
+    const inp = numInputs.nth(i);
     const val = await inp.inputValue().catch(() => '');
     if (!val) await inp.fill('0').catch(() => {});
+  }
+
+  // Fallback 3: empty selects → first available option
+  const selects = modal.locator('select:visible');
+  const sCnt = await selects.count().catch(() => 0);
+  for (let i = 0; i < sCnt; i++) {
+    const sel = selects.nth(i);
+    const val = await sel.inputValue().catch(() => '');
+    if (!val) await sel.selectOption({ index: 1 }).catch(() => {});
+  }
+
+  // Fallback 4: unchecked radio groups → first option
+  const fieldsets = await modal.locator('fieldset').all();
+  for (const fs of fieldsets) {
+    const checked = await fs.locator('input[type="radio"]:checked').count().catch(() => 0);
+    if (checked === 0) {
+      await fs.locator('input[type="radio"]').first().check().catch(() => {});
+    }
+  }
+
+  // Fallback 5: custom role="radio" groups → first option
+  const groups = await modal.locator('[role="group"], [role="radiogroup"]').all();
+  for (const g of groups) {
+    const checked = await g.locator('[role="radio"][aria-checked="true"]').count().catch(() => 0);
+    if (checked === 0) {
+      await g.locator('[role="radio"]').first().click().catch(() => {});
+    }
+  }
+
+  // Fallback 6: empty textareas → cover letter
+  const tas = modal.locator('textarea:visible');
+  const taCnt = await tas.count().catch(() => 0);
+  for (let i = 0; i < taCnt; i++) {
+    const ta = tas.nth(i);
+    const val = await ta.inputValue().catch(() => '');
+    if (!val) await ta.fill(PROFILE.coverLetter).catch(() => {});
+  }
+
+  // Fallback 7: unchecked checkboxes (agreements/terms) → check them
+  const checkboxes = modal.locator('input[type="checkbox"]:visible');
+  const cbCnt = await checkboxes.count().catch(() => 0);
+  for (let i = 0; i < cbCnt; i++) {
+    const cb = checkboxes.nth(i);
+    const checked = await cb.isChecked().catch(() => false);
+    if (!checked) await cb.check().catch(() => {});
   }
 }
 
