@@ -1,0 +1,24 @@
+{
+  "name": "linkedin-easy-apply-bot",
+  "version": "1.0.0",
+  "description": "Automate LinkedIn Easy Apply — searches multiple job titles, fills every form field, and submits up to 50 applications per day using Playwright.",
+  "main": "linkedin-apply.js",
+  "scripts": {
+    "start": "node linkedin-apply.js",
+    "install-browser": "npx playwright install chromium"
+  },
+  "keywords": [
+    "linkedin",
+    "easy-apply",
+    "job-application",
+    "automation",
+    "playwright",
+    "bot",
+    "job-search"
+  ],
+  "author": "Adithyo Dewangga Wijaya",
+  "license": "MIT",
+  "dependencies": {
+    "playwright": "^1.59.1"
+  }
+}

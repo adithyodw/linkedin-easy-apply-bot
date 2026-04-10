@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Browser session data (contains personal cookies)
+linkedin-browser-data/
+linkedin-session.json
+
+# Personal application history
+linkedin-applied.json
+linkedin-daily.json
+linkedin-log.txt
+
+# Environment
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/
+.idea/
+*.swp
